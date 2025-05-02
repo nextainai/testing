@@ -3,43 +3,218 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free Hosting for Small Websites</title>
+  <title>Domain Checker - Find Your Perfect Domain</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f4f4; }
-    .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
-    h1 { text-align: center; }
-    form { display: flex; flex-direction: column; gap: 10px; }
-    input, button { padding: 10px; font-size: 16px; }
-    button { background: #007bff; color: white; border: none; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    #result { margin-top: 20px; color: #333; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #6e48aa, #9d50bb);
+      color: #fff;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .search-box {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 25px;
+      width: 70%;
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]::placeholder {
+      color: #ddd;
+    }
+
+    input[type="text"]:focus {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.02);
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 25px;
+      background: #ff6f61;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #ff4d3f;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 77, 63, 0.5);
+    }
+
+    .loader {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 5px solid #fff;
+      border-top: 5px solid #ff6f61;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      animation: fadeIn 0.5s ease-in-out;
+      display: none;
+    }
+
+    .result h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .result p {
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .result ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .result ul li {
+      margin: 5px 0;
+      font-size: 0.9rem;
+    }
+
+    .result ul li a {
+      color: #ffeb3b;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .result ul li a:hover {
+      color: #fff;
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 1.8rem; }
+      input[type="text"], button { font-size: 0.9rem; }
+      .container { padding: 20px; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Free Hosting for Small Websites</h1>
-    <p>Sign up to host your small website for free! You'll get a subdomain like <code>yourname.freehostingsite.net</code>.</p>
-    <form id="hostingForm">
-      <input type="text" id="username" placeholder="Your username (e.g., my site)" required>
-      <input type="email" id="email" placeholder="Your email" required>
-      <button type="submit">Request Hosting</button>
-    </form>
-    <div id="result"></div>
+    <h1>Find Your Perfect Domain 🌟</h1>
+    <div class="search-box">
+      <input type="text" id="domainInput" placeholder="Enter domain (e.g., example.com)">
+      <button onclick="checkDomain()">Search</button>
+    </div>
+    <div class="loader" id="loader"></div>
+    <div class="result" id="result">
+      <h3 id="domainStatus"></h3>
+      <p id="domainPrice"></p>
+      <p>Best Places to Buy:</p>
+      <ul id="buyLinks"></ul>
+    </div>
   </div>
 
   <script>
-    document.getElementById('hostingForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('username').value;
-      const email = document.getElementById('email').value;
+    function checkDomain() {
+      const domainInput = document.getElementById('domainInput').value.trim();
+      const loader = document.getElementById('loader');
+      const result = document.getElementById('result');
+      const domainStatus = document.getElementById('domainStatus');
+      const domainPrice = document.getElementById('domainPrice');
+      const buyLinks = document.getElementById('buyLinks');
 
-      const response = await fetch('/.netlify/functions/request-hosting', {
-        method: 'POST',
-        body: JSON.stringify({ username, email }),
-        headers: { 'Content-Type': 'application/json' },
-      });
-      const data = await response.json();
-      document.getElementById('result').innerText = data.message;
+      // Basic validation
+      if (!domainInput || !domainInput.includes('.')) {
+        alert('Please enter a valid domain name (e.g., example.com)');
+        return;
+      }
+
+      // Show loader and hide result
+      loader.style.display = 'block';
+      result.style.display = 'none';
+
+      // Simulate API call with a timeout
+      setTimeout(() => {
+        loader.style.display = 'none';
+        result.style.display = 'block';
+
+        // Mock response (in a real scenario, you'd query a WHOIS API or registrar API)
+        const isAvailable = Math.random() > 0.5; // Randomly decide availability for demo
+        const price = isAvailable ? '$9.99/year' : 'Not available for purchase';
+        const statusText = isAvailable
+          ? `${domainInput} is available! 🎉`
+          : `${domainInput} is not available. 😔`;
+
+        // Update UI
+        domainStatus.textContent = statusText;
+        domainPrice.textContent = `Price: ${price}`;
+
+        // Recommended places to buy (mock data)
+        buyLinks.innerHTML = `
+          <li><a href="https://www.namecheap.com" target="_blank">Namecheap - Starting at $0.99/year</a></li>
+          <li><a href="https://www.hostinger.in" target="_blank">Hostinger - Starting at ₹89.00</a></li>
+          <li><a href="https://www.bluehost.in" target="_blank">Bluehost - Free with hosting plans</a></li>
+        `;
+      }, 2000); // Simulate 2-second delay for "loading"
+    }
+
+    // Allow pressing Enter to search
+    document.getElementById('domainInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkDomain();
     });
   </script>
 </body>
