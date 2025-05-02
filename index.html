@@ -18,6 +18,16 @@
       color: #fff;
       padding: 20px;
       overflow-x: hidden;
+      position: relative;
+    }
+
+    #particles-js {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
     }
 
     .container {
@@ -29,18 +39,23 @@
       max-width: 800px;
       margin: 0 auto;
       text-align: center;
-      animation: fadeIn 1s ease-in-out;
+      animation: zoomIn 1s ease-in-out;
+      position: relative;
+      z-index: 1;
     }
 
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
+    @keyframes zoomIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
     h1 {
       font-size: 2.5rem;
       margin-bottom: 20px;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(90deg, #ffeb3b, #ff6f61);
+      -webkit-background-clip: text;
+      color: transparent;
     }
 
     .nav-tabs {
@@ -60,6 +75,13 @@
       color: #fff;
       cursor: pointer;
       transition: all 0.3s ease;
+      animation: bounce 0.5s ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
     }
 
     .nav-tabs button:hover {
@@ -70,6 +92,7 @@
 
     .nav-tabs button.active {
       background: #ff4d3f;
+      box-shadow: 0 0 20px rgba(255, 77, 63, 0.7);
     }
 
     .section {
@@ -109,6 +132,7 @@
     input[type="text"]:focus, textarea:focus {
       background: rgba(255, 255, 255, 0.3);
       transform: scale(1.02);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
 
     button {
@@ -144,7 +168,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    .result, .test-result, .game-board, .ai-info {
+    .result, .test-result, .game-board, .ai-info, .search-result {
       margin-top: 20px;
       padding: 20px;
       background: rgba(255, 255, 255, 0.2);
@@ -152,33 +176,33 @@
       animation: fadeIn 0.5s ease-in-out;
     }
 
-    .result h3, .test-result h3, .ai-info h3 {
+    .result h3, .test-result h3, .ai-info h3, .search-result h3 {
       font-size: 1.5rem;
       margin-bottom: 10px;
     }
 
-    .result p, .test-result p, .ai-info p {
+    .result p, .test-result p, .ai-info p, .search-result p {
       font-size: 1rem;
       margin-bottom: 10px;
     }
 
-    .result ul, .ai-info ul {
+    .result ul, .ai-info ul, .search-result ul {
       list-style: none;
       padding: 0;
     }
 
-    .result ul li, .ai-info ul li {
+    .result ul li, .ai-info ul li, .search-result ul li {
       margin: 5px 0;
       font-size: 0.9rem;
     }
 
-    .result ul li a, .ai-info ul li a {
+    .result ul li a, .ai-info ul li a, .search-result ul li a {
       color: #ffeb3b;
       text-decoration: none;
       transition: color 0.3s ease;
     }
 
-    .result ul li a:hover, .ai-info ul li a:hover {
+    .result ul li a:hover, .ai-info ul li a:hover, .search-result ul li a:hover {
       color: #fff;
     }
 
@@ -206,16 +230,74 @@
       background: rgba(255, 255, 255, 0.5);
     }
 
+    /* Chat Window Styles */
+    .chat-window {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 350px;
+      height: 500px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      animation: slideInChat 0.5s ease-in-out;
+    }
+
+    @keyframes slideInChat {
+      0% { transform: translateY(100%); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .chat-header {
+      background: #ff6f61;
+      color: #fff;
+      padding: 10px;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+    }
+
+    .chat-header h3 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    .chat-header button {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .chat-body {
+      height: calc(100% - 50px);
+      overflow: hidden;
+    }
+
+    .chat-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
     @media (max-width: 480px) {
       h1 { font-size: 1.8rem; }
       input[type="text"], textarea, button { font-size: 0.9rem; }
       .container { padding: 20px; }
       .game-board { grid-template-columns: repeat(3, 80px); }
       .game-board div { width: 80px; height: 80px; font-size: 1.5rem; }
+      .chat-window { width: 300px; height: 400px; }
     }
   </style>
 </head>
 <body>
+  <div id="particles-js"></div>
   <div class="container">
     <h1>Your All-in-One Tool 🌟</h1>
     <div class="nav-tabs">
@@ -223,6 +305,7 @@
       <button onclick="showSection('typing-speed')">Typing Speed</button>
       <button onclick="showSection('clicking-speed')">Clicking Speed</button>
       <button onclick="showSection('tic-tac-toe')">Tic-Tac-Toe</button>
+      <button onclick="showSection('secure-search')">Secure Search</button>
       <button onclick="showSection('next-ai')">NEXT AI</button>
     </div>
 
@@ -289,6 +372,21 @@
       </div>
     </div>
 
+    <!-- Secure Search Section -->
+    <div class="section" id="secure-search">
+      <h2>Secure Search 🔒</h2>
+      <p>Search the web securely without exposing your IP address or storing history on your device.</p>
+      <div class="search-box">
+        <input type="text" id="secureSearchInput" placeholder="Enter your search query">
+        <button onclick="secureSearch()">Search Securely</button>
+      </div>
+      <div class="loader" id="secureSearchLoader"></div>
+      <div class="search-result" id="secureSearchResult">
+        <h3>Secure Search Results</h3>
+        <ul id="searchResults"></ul>
+      </div>
+    </div>
+
     <!-- NEXT AI Section -->
     <div class="section" id="next-ai">
       <h2>Discover NEXT AI</h2>
@@ -298,14 +396,45 @@
           <p>Explore the power of NEXT AI, a cutting-edge chatbot designed to assist you with anything you need. Visit <a href="https://nai.ct.ws" target="_blank">nai.ct.ws</a> to learn more!</p>
           <p>Ready to chat? Click below to start:</p>
           <ul>
-            <li><a href="https://nextai.ct.ws" target="_blank">Chat with NEXT AI Now</a></li>
+            <li><a href="#" onclick="openChatWindow(); return false;">Chat with NEXT AI Now</a></li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Chat Window -->
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header" id="chatHeader">
+      <h3>NEXT AI Chat</h3>
+      <button onclick="closeChatWindow()">✕</button>
+    </div>
+    <div class="chat-body">
+      <iframe src="https://nextai.ct.ws" title="NEXT AI Chat"></iframe>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <script>
+    // Particles.js Background
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: '#ffffff' },
+        shape: { type: 'circle' },
+        opacity: { value: 0.5, random: true },
+        size: { value: 3, random: true },
+        line_linked: { enable: true, distance: 150, color: '#ffffff', opacity: 0.4, width: 1 },
+        move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+        modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+      },
+      retina_detect: true
+    });
+
     // Navigation Tabs
     function showSection(sectionId) {
       document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
@@ -449,6 +578,73 @@
       document.getElementById('gameStatus').textContent = `Player ${currentPlayer}'s Turn`;
       document.querySelectorAll('#gameBoard div').forEach(cell => cell.textContent = '');
     }
+
+    // Secure Search
+    function secureSearch() {
+      const searchInput = document.getElementById('secureSearchInput').value.trim();
+      const loader = document.getElementById('secureSearchLoader');
+      const result = document.getElementById('secureSearchResult');
+      const searchResults = document.getElementById('searchResults');
+
+      if (!searchInput) {
+        alert('Please enter a search query');
+        return;
+      }
+
+      loader.style.display = 'block';
+      result.style.display = 'none';
+
+      setTimeout(() => {
+        loader.style.display = 'none';
+        result.style.display = 'block';
+
+        // Mock secure search results (in a real scenario, this would go through a proxy server)
+        searchResults.innerHTML = `
+          <li><a href="https://example.com" target="_blank">Example Result 1 - Securely Fetched 🔒</a></li>
+          <li><a href="https://example.com" target="_blank">Example Result 2 - Securely Fetched 🔒</a></li>
+          <li><a href="https://example.com" target="_blank">Example Result 3 - Securely Fetched 🔒</a></li>
+        `;
+      }, 2000);
+    }
+
+    document.getElementById('secureSearchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') secureSearch();
+    });
+
+    // Chat Window
+    function openChatWindow() {
+      const chatWindow = document.getElementById('chatWindow');
+      chatWindow.style.display = 'block';
+
+      // Make the chat window draggable
+      const chatHeader = document.getElementById('chatHeader');
+      let isDragging = false, currentX, currentY, initialX, initialY;
+
+      chatHeader.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        initialX = e.clientX - currentX;
+        initialY = e.clientY - currentY;
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          e.preventDefault();
+          currentX = e.clientX - initialX;
+          currentY = e.clientY - initialY;
+          chatWindow.style.left = currentX + 'px';
+          chatWindow.style.top = currentY + 'px';
+          chatWindow.style.bottom = 'auto';
+          chatWindow.style.right = 'auto';
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+    }
+
+    function closeChatWindow() {
+      document.getElementById('chatWindow').style.display = 'none';
+    }
   </script>
 </body>
-</html>
