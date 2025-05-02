@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta http-equiv="refresh" content=
-  "5;url=https://nojs.domaincntrol.com">
-  <title></title>
+  <meta charset="UTF-8">
+  <title>Free Hosting Service</title>
 </head>
 <body>
+  <h1>Free Website Hosting</h1>
+  <form id="hostingForm">
+    <input type="text" id="subdomain" placeholder="Choose a subdomain (e.g., my site)" required>
+    <button type="submit">Request Hosting</button>
+  </form>
+  <div id="result"></div>
+
   <script>
-    let retries = 3, interval = 1000;
-    (function retry() {
-      fetch("https://domaincntrol.com/?orighost=" + window.location.href)
-        .then(response => response.json())
-        .then(data => window.location.href = data)
-        .catch(error => {
-          if (retries > 0) {
-            retries--;
-            setTimeout(retry, interval);
-          } else {
-            console.error("Error: ", error);
-          }
-        });
-    })();
+    document.getElementById('hostingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const subdomain = document.getElementById('subdomain').value;
+      const response = await fetch('/.netlify/functions/request-hosting', {
+        method: 'POST',
+        body: JSON.stringify({ subdomain }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      document.getElementById('result').innerText = data.message;
+    });
   </script>
 </body>
 </html>
